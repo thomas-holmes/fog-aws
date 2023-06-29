@@ -23,7 +23,7 @@ module Fog
               'Tags' => [],
               'TargetGroupARNs' => [],
               'TerminationPolicies' => [],
-              'TrafficSources' = [],
+              'TrafficSources' => [],
             }
           end
 
