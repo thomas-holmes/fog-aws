@@ -9,6 +9,7 @@ module Fog
             reset_instance
             reset_suspended_process
             reset_tag
+            reset_traffic_source
             @results = { 'AutoScalingGroups' => [] }
             @response = { 'DescribeAutoScalingGroupsResult' => {}, 'ResponseMetadata' => {} }
           end
@@ -33,6 +34,10 @@ module Fog
 
           def reset_instance
             @instance = {}
+          end
+
+          def reset_traffic_source
+            @traffic_source = {}
           end
 
           def reset_suspended_process
@@ -92,7 +97,8 @@ module Fog
               elsif @in_termination_policies
                 @auto_scaling_group['TerminationPolicies'] << value
               elsif @in_traffic_sources
-                @auto_scaling_group['TrafficSources'] << value
+                @auto_scaling_group['TrafficSources'] << @traffic_source
+                reset_traffic_source
               else
                 @results['AutoScalingGroups'] << @auto_scaling_group
                 reset_auto_scaling_group
@@ -131,6 +137,12 @@ module Fog
 
             when 'TrafficSources'
               @in_traffic_sources = false
+
+            when 'Identifier'
+              @traffic_source['Identifier'] = value if @in_traffic_sources
+
+            when 'Type'
+              @traffic_source['Type'] = value if @in_traffic_sources
 
             when 'TerminationPolicies'
               @in_termination_policies = false
