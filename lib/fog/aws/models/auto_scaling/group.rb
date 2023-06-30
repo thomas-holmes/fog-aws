@@ -22,7 +22,7 @@ module Fog
         attribute :termination_policies,      :aliases => 'TerminationPolicies'
         attribute :vpc_zone_identifier,       :aliases => 'VPCZoneIdentifier'
         attribute :target_group_arns,         :aliases => 'TargetGroupARNs'
-        attribute :traffic_sources,           :aliases => 'TargetSources'
+        attribute :traffic_sources,           :aliases => 'TrafficSources'
 
         def initialize(attributes={})
           self.instances = []
