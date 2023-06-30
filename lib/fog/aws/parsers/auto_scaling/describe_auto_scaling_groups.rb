@@ -5,6 +5,7 @@ module Fog
         class DescribeAutoScalingGroups < Fog::Parsers::Base
           def reset
             reset_auto_scaling_group
+            reset_member_depth
             reset_enabled_metric
             reset_instance
             reset_suspended_process
@@ -24,6 +25,10 @@ module Fog
               'TargetGroupARNs' => [],
               'TerminationPolicies' => []
             }
+          end
+
+          def reset_member_depth
+            @member_depth = 0
           end
 
           def reset_enabled_metric
@@ -46,6 +51,7 @@ module Fog
             super
             case name
             when 'member'
+              @member_depth += 1
             when 'AvailabilityZones'
               @in_availability_zones = true
             when 'EnabledMetrics'
@@ -68,6 +74,7 @@ module Fog
           def end_element(name)
             case name
             when 'member'
+              @member_depth -= 1
               if @in_availability_zones
                 @auto_scaling_group['AvailabilityZones'] << value
               elsif @in_enabled_metrics
@@ -88,9 +95,11 @@ module Fog
                 @auto_scaling_group['TargetGroupARNs'] << value
               elsif @in_termination_policies
                 @auto_scaling_group['TerminationPolicies'] << value
-              else
+              elsif @member_depth == 0
                 @results['AutoScalingGroups'] << @auto_scaling_group
                 reset_auto_scaling_group
+              else
+                # Unprocessed entity
               end
 
             when 'AvailabilityZones'
