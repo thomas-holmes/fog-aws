@@ -9,6 +9,7 @@ module Fog
             reset_instance
             reset_suspended_process
             reset_tag
+            reset_traffic_source
             @results = { 'AutoScalingGroups' => [] }
             @response = { 'DescribeAutoScalingGroupsResult' => {}, 'ResponseMetadata' => {} }
           end
@@ -22,7 +23,8 @@ module Fog
               'SuspendedProcesses' => [],
               'Tags' => [],
               'TargetGroupARNs' => [],
-              'TerminationPolicies' => []
+              'TerminationPolicies' => [],
+              'TrafficSources' => [],
             }
           end
 
@@ -32,6 +34,10 @@ module Fog
 
           def reset_instance
             @instance = {}
+          end
+
+          def reset_traffic_source
+            @traffic_source = {}
           end
 
           def reset_suspended_process
@@ -62,6 +68,8 @@ module Fog
               @in_target_groups = true
             when 'TerminationPolicies'
               @in_termination_policies = true
+            when 'TrafficSources'
+              @in_traffic_sources = true
             end
           end
 
@@ -88,6 +96,9 @@ module Fog
                 @auto_scaling_group['TargetGroupARNs'] << value
               elsif @in_termination_policies
                 @auto_scaling_group['TerminationPolicies'] << value
+              elsif @in_traffic_sources
+                @auto_scaling_group['TrafficSources'] << @traffic_source
+                reset_traffic_source
               else
                 @results['AutoScalingGroups'] << @auto_scaling_group
                 reset_auto_scaling_group
@@ -123,6 +134,15 @@ module Fog
 
             when 'TargetGroupARNs'
               @in_target_groups = false
+
+            when 'TrafficSources'
+              @in_traffic_sources = false
+
+            when 'Identifier'
+              @traffic_source['Identifier'] = value if @in_traffic_sources
+
+            when 'Type'
+              @traffic_source['Type'] = value if @in_traffic_sources
 
             when 'TerminationPolicies'
               @in_termination_policies = false

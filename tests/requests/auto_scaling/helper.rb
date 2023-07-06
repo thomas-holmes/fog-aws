@@ -100,6 +100,7 @@ class AWS
         'Tags' => [TAG_DESCRIPTION],
         'TargetGroupARNs' => Array,
         'TerminationPolicies' => [String],
+        'TrafficSources' => Array,
         'VPCZoneIdentifier' => Fog::Nullable::String
       }
 
